@@ -5,13 +5,17 @@ import platform
 from urllib3 import encode_multipart_formdata
 from datetime import datetime, timezone
 import helper
+from dotenv import load_dotenv
 
+dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+if os.path.exists(dotenv_path):
+    load_dotenv(dotenv_path)
 
 class tradingview:
 
   def __init__(self):
     print('Getting sessionid from db')
-    self.sessionid = os.environ['tvsessionid']
+    self.sessionid = os.environ["sessionid"] if 'sessionid' in os.environ else 'abcd'
 
     headers = {'cookie': 'sessionid=' + self.sessionid}
     test = requests.request("GET", config.urls["tvcoins"], headers=headers)
@@ -38,7 +42,6 @@ class tradingview:
                             headers=login_headers)
       cookies = login.cookies.get_dict()
       self.sessionid = cookies["sessionid"]
-      os.environ['tvsessionid'] = self.sessionid
 
   def validate_username(self, username):
     users = requests.get(config.urls["username_hint"] + "?s=" + username)
