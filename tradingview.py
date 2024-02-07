@@ -1,5 +1,4 @@
 import os
-from replit import db
 import config
 import requests
 import platform
@@ -12,14 +11,14 @@ class tradingview:
 
   def __init__(self):
     print('Getting sessionid from db')
-    self.sessionid = db["sessionid"] if 'sessionid' in db.keys() else 'abcd'
+    self.sessionid = os.environ['tvsessionid']
 
     headers = {'cookie': 'sessionid=' + self.sessionid}
     test = requests.request("GET", config.urls["tvcoins"], headers=headers)
     print(test.text)
     print('sessionid from db : ' + self.sessionid)
     if test.status_code != 200:
-      print('session id from db is invalid')
+      print('session id from enviroment is invalid')
       username = os.environ['tvusername']
       password = os.environ['tvpassword']
 
@@ -39,7 +38,7 @@ class tradingview:
                             headers=login_headers)
       cookies = login.cookies.get_dict()
       self.sessionid = cookies["sessionid"]
-      db["sessionid"] = self.sessionid
+      os.environ['tvsessionid'] = self.sessionid
 
   def validate_username(self, username):
     users = requests.get(config.urls["username_hint"] + "?s=" + username)
